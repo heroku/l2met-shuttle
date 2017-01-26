@@ -4,3 +4,7 @@
 
 [l2met]: https://github.com/ryandotsmith/l2met
 [log-shuttle]: https://github.com/heroku/log-shuttle
+
+## Usage
+
+    $ <command> [<argument>...] | l2met-shuttle <url>
