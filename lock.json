@@ -1,6 +1,14 @@
 {
-    "memo": "c5011d5c2f5a83760a783eafa2eb7ea531f5b8b83834466899b40d2d049d35c1",
+    "memo": "01a53e9f710b2eb7db83cb4482389c8a72a7efc179b7d368fb706c1709ac18b6",
     "projects": [
+        {
+            "name": "github.com/bmizerany/aws4",
+            "branch": "master",
+            "revision": "5fb2e72396263668edd9a2956052e402cf6c104a",
+            "packages": [
+                "."
+            ]
+        },
         {
             "name": "github.com/davecgh/go-spew",
             "version": "v1.1.0",
@@ -10,11 +18,35 @@
             ]
         },
         {
+            "name": "github.com/heroku/log-shuttle",
+            "version": "v0.16.0",
+            "revision": "25add848160801399787327d73eae169a160b54d",
+            "packages": [
+                "."
+            ]
+        },
+        {
+            "name": "github.com/pborman/uuid",
+            "version": "v1.0",
+            "revision": "a97ce2ca70fa5a848076093f05e639a89ca34d06",
+            "packages": [
+                "."
+            ]
+        },
+        {
             "name": "github.com/pmezard/go-difflib",
             "version": "v1.0.0",
-            "revision": "c0b812dadcf4498dede02bb7f0c5c478be997e34",
+            "revision": "792786c7400a136282c1664665ae0a8db921c6c2",
             "packages": [
                 "difflib"
+            ]
+        },
+        {
+            "name": "github.com/rcrowley/go-metrics",
+            "branch": "master",
+            "revision": "1f30fe9094a513ce4c700b9a54458bbb0c96996c",
+            "packages": [
+                "."
             ]
         },
         {
