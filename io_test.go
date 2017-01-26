@@ -38,3 +38,15 @@ func TestRead(t *testing.T) {
 	n, _ = r.Read(p)
 	assert.Equal(t, "world", string(p[:n]))
 }
+
+func TestCloseRead(t *testing.T) {
+	ch := make(chan []byte)
+	close(ch)
+
+	r := Reader(ch)
+
+	p := make([]byte, 1)
+	n, err := r.Read(p)
+	assert.Equal(t, 0, n)
+	assert.Equal(t, io.EOF, err)
+}
