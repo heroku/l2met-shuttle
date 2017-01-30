@@ -47,3 +47,13 @@ func TestSkipLuhnMatches(t *testing.T) {
 	assert.Equal(t, "sample#depth=4222222222222222\n", string(<-r))
 	assert.Equal(t, "\n", string(<-r))
 }
+
+func TestCloseSkipLuhnMatches(t *testing.T) {
+	ch := make(chan []byte)
+	r := SkipLuhnMatches(ch)
+
+	go close(ch)
+
+	_, ok := <-r
+	assert.False(t, ok)
+}
