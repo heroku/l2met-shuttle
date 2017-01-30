@@ -8,13 +8,13 @@ import (
 
 func TestExtractMetrics(t *testing.T) {
 	ch := make(chan []byte, 5)
-	r := ExtractMetrics(ch)
-
 	ch <- []byte("foo count#requests=1\n")
 	ch <- []byte("measure#query=0.2ms bar baz\n")
 	ch <- []byte("qux\n")
 	ch <- []byte("quux sample#size=0 unique#user=alice\n")
 	ch <- []byte("source=development\n")
+
+	r := ExtractMetrics(ch)
 
 	assert.Equal(t, "count#requests=1\n", string(<-r))
 	assert.Equal(t, "measure#query=0.2ms\n", string(<-r))
@@ -24,9 +24,9 @@ func TestExtractMetrics(t *testing.T) {
 
 func TestCloseExtractMetrics(t *testing.T) {
 	ch := make(chan []byte)
-	r := ExtractMetrics(ch)
-
 	close(ch)
+
+	r := ExtractMetrics(ch)
 
 	_, ok := <-r
 	assert.False(t, ok)
