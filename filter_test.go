@@ -11,14 +11,14 @@ func TestExtractMetrics(t *testing.T) {
 	r := ExtractMetrics(ch)
 
 	go func() {
-		ch <- []byte("foo count#requests=1\n")
+		ch <- []byte("foo count#requests=1 count#requests=-1\n")
 		ch <- []byte("measure#query=0.2ms bar baz\n")
 		ch <- []byte("qux\n")
 		ch <- []byte("quux sample#size=0 unique#user=alice\n")
 		ch <- []byte("source=development\n")
 	}()
 
-	assert.Equal(t, "count#requests=1\n", string(<-r))
+	assert.Equal(t, "count#requests=1 count#requests=-1\n", string(<-r))
 	assert.Equal(t, "measure#query=0.2ms\n", string(<-r))
 	assert.Equal(t, "sample#size=0 unique#user=alice\n", string(<-r))
 	assert.Equal(t, "source=development\n", string(<-r))
