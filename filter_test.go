@@ -32,6 +32,23 @@ func TestCloseExtractMetrics(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func BenchmarkExtractMetrics(b *testing.B) {
+	ch := make(chan []byte)
+
+	r := ExtractMetrics(ch)
+	go discard(r)
+
+	for n := 0; n < b.N; n++ {
+		ch <- []byte("count#operations=1\n")
+	}
+}
+
+func discard(in <-chan []byte) {
+	for _ = range in {
+		// ignore
+	}
+}
+
 func TestSkipLuhnMatches(t *testing.T) {
 	ch := make(chan []byte, 5)
 	ch <- []byte("4111 1111 1111 1111\n")
@@ -54,4 +71,15 @@ func TestCloseSkipLuhnMatches(t *testing.T) {
 
 	_, ok := <-r
 	assert.False(t, ok)
+}
+
+func BenchmarkSkipLuhnMatches(b *testing.B) {
+	ch := make(chan []byte)
+
+	r := SkipLuhnMatches(ch)
+	go discard(r)
+
+	for n := 0; n < b.N; n++ {
+		ch <- []byte("0000 0000 0000 4111 1111 1111 1111\n")
+	}
 }
