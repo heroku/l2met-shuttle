@@ -31,3 +31,27 @@ func TestCloseExtractMetrics(t *testing.T) {
 	_, ok := <-r
 	assert.False(t, ok)
 }
+
+func TestSkipLuhnMatches(t *testing.T) {
+	ch := make(chan []byte, 5)
+	ch <- []byte("4111 1111 1111 1111\n")
+	ch <- []byte("measure#latency=4.111111111111111\n")
+	ch <- []byte("sample#depth=4222222222222222\n")
+	ch <- []byte("unique#card=4111111111111111\n")
+	ch <- []byte("\n")
+
+	r := SkipLuhnMatches(ch)
+
+	assert.Equal(t, "sample#depth=4222222222222222\n", string(<-r))
+	assert.Equal(t, "\n", string(<-r))
+}
+
+func TestCloseSkipLuhnMatches(t *testing.T) {
+	ch := make(chan []byte)
+	r := SkipLuhnMatches(ch)
+
+	go close(ch)
+
+	_, ok := <-r
+	assert.False(t, ok)
+}

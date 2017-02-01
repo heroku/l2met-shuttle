@@ -22,7 +22,7 @@ func main() {
 	config := lshuttle.NewConfig()
 	config.LogsURL = url
 
-	r := shuttle.Reader(shuttle.ExtractMetrics(ch))
+	r := shuttle.Reader(shuttle.SkipLuhnMatches(shuttle.ExtractMetrics(ch)))
 
 	s := lshuttle.NewShuttle(config)
 	s.LoadReader(ioutil.NopCloser(r))
