@@ -42,7 +42,10 @@ func TestSkipLuhnMatches(t *testing.T) {
 
 	r := SkipLuhnMatches(ch)
 
+	assert.Equal(t, "count#l2met-shuttle.luhn-match-skips=1\n", string(<-r))
+	assert.Equal(t, "count#l2met-shuttle.luhn-match-skips=1\n", string(<-r))
 	assert.Equal(t, "sample#depth=4222222222222222\n", string(<-r))
+	assert.Equal(t, "count#l2met-shuttle.luhn-match-skips=1\n", string(<-r))
 	assert.Equal(t, "\n", string(<-r))
 }
 
