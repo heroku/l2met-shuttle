@@ -41,6 +41,7 @@ func skipLuhnMatches(in <-chan []byte, out chan<- []byte) {
 	for p := range in {
 		numbers := re.Split(string(p), -1)
 		if containsLuhnMatch(numbers) {
+			out <- []byte("count#l2met-shuttle.luhn-match-skips=1\n")
 			continue
 		}
 
