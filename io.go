@@ -10,7 +10,11 @@ func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
-		line := scanner.Text() + "\n"
+		line := scanner.Bytes()
+		cpy := make([]byte, len(line)+1)
+		copy(cpy, line)
+		line = append(line, '\n')
+
 		if err := writeFully(w, line); err != nil {
 			return err
 		}
@@ -21,14 +25,9 @@ func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 	return scanner.Err()
 }
 
-func writeFully(w io.Writer, str string) error {
-	bytes := []byte(str)
-	offset := 0
-
-	for offset < len(bytes) {
-		slice := bytes[offset:]
-
-		written, err := w.Write(slice)
+func writeFully(w io.Writer, bytes []byte) error {
+	for offset := 0; offset < len(bytes); {
+		written, err := w.Write(bytes[offset:])
 		if err != nil {
 			return err
 		}

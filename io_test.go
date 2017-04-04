@@ -16,9 +16,8 @@ func TestCopy(t *testing.T) {
 	buf.WriteString("bar ")
 	buf.WriteString("baz\n")
 
-	out := new(bytes.Buffer)
-
-	go Copy(ch, buf, out)
+	var out bytes.Buffer
+	go Copy(ch, buf, &out)
 
 	assert.Equal(t, "foo\n", string(<-ch))
 	assert.Equal(t, "bar baz\n", string(<-ch))
