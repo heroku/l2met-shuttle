@@ -6,14 +6,37 @@ import (
 	"io"
 )
 
-func Copy(ch chan<- []byte, r io.Reader) error {
+func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
-		ch <- []byte(scanner.Text() + "\n")
+		line := scanner.Text() + "\n"
+		if err := writeFully(w, line); err != nil {
+			return err
+		}
+
+		ch <- []byte(line)
 	}
 
 	return scanner.Err()
+}
+
+func writeFully(w io.Writer, str string) error {
+	bytes := []byte(str)
+	offset := 0
+
+	for offset < len(bytes) {
+		slice := bytes[offset:]
+
+		written, err := w.Write(slice)
+		if err != nil {
+			return err
+		}
+
+		offset += written
+	}
+
+	return nil
 }
 
 type reader struct {
