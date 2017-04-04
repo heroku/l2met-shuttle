@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,22 +12,25 @@ import (
 )
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "usage: %v [--tee] <url>\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "usage: %v [options] <url>\n", os.Args[0])
+	flag.PrintDefaults()
 	os.Exit(1)
 }
 
 func parseArgs() (string, io.Writer) {
-	switch len(os.Args) {
-	case 2: // [l2met-shuttle, url]
-		return os.Args[1], ioutil.Discard
-	case 3: // [l2met-shuttle, --tee?, url]
-		if os.Args[1] == "--tee" {
-			return os.Args[2], os.Stdout
-		}
+	tee := flag.Bool("tee", false, "pipe input through to stdout")
+	flag.Parse()
+
+	if flag.NArg() != 1 {
+		usage()
 	}
 
-	usage()
-	return "", nil // unreachable
+	var out io.Writer = ioutil.Discard
+	if *tee {
+		out = os.Stdout
+	}
+
+	return flag.Arg(1), out
 }
 
 func main() {
