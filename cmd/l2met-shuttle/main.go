@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -9,13 +11,30 @@ import (
 	lshuttle "github.com/heroku/log-shuttle"
 )
 
-func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "usage: %v <url>\n", os.Args[0])
-		os.Exit(1)
+func usage() {
+	fmt.Fprintf(os.Stderr, "usage: %v [options] <url>\n", os.Args[0])
+	flag.PrintDefaults()
+	os.Exit(1)
+}
+
+func parseArgs() (string, io.Writer) {
+	tee := flag.Bool("tee", false, "pipe input through to stdout")
+	flag.Parse()
+
+	if flag.NArg() != 1 {
+		usage()
 	}
 
-	url := os.Args[1]
+	var out io.Writer = ioutil.Discard
+	if *tee {
+		out = os.Stdout
+	}
+
+	return flag.Arg(1), out
+}
+
+func main() {
+	url, output := parseArgs()
 
 	ch := make(chan []byte)
 
@@ -28,7 +47,7 @@ func main() {
 	s.LoadReader(ioutil.NopCloser(r))
 	s.Launch()
 
-	shuttle.Copy(ch, os.Stdin)
+	shuttle.Copy(ch, os.Stdin, output)
 
 	close(ch)
 

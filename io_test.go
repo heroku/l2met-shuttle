@@ -16,10 +16,13 @@ func TestCopy(t *testing.T) {
 	buf.WriteString("bar ")
 	buf.WriteString("baz\n")
 
-	go Copy(ch, buf)
+	var out bytes.Buffer
+	go Copy(ch, buf, &out)
 
 	assert.Equal(t, "foo\n", string(<-ch))
 	assert.Equal(t, "bar baz\n", string(<-ch))
+
+	assert.Equal(t, "foo\nbar baz\n", out.String())
 }
 
 func TestRead(t *testing.T) {
