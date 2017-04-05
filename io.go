@@ -19,7 +19,7 @@ func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 			return err
 		}
 
-		ch <- []byte(line)
+		ch <- line
 	}
 
 	return scanner.Err()
