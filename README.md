@@ -8,3 +8,7 @@
 ## Usage
 
     $ <command> [<argument>...] | l2met-shuttle <url>
+
+Or, to pass input through to stdout as well as transporting it to an l2met service
+
+    $ <commmand> [<argument>...] | l2met-shuttle --tee <url>
