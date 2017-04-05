@@ -15,7 +15,7 @@ func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 		copy(cpy, line)
 		line = append(line, '\n')
 
-		if err := writeFully(w, line); err != nil {
+		if _, err := io.Copy(w, bytes.NewReader(line)); err != nil {
 			return err
 		}
 
@@ -23,19 +23,6 @@ func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
 	}
 
 	return scanner.Err()
-}
-
-func writeFully(w io.Writer, bytes []byte) error {
-	for offset := 0; offset < len(bytes); {
-		written, err := w.Write(bytes[offset:])
-		if err != nil {
-			return err
-		}
-
-		offset += written
-	}
-
-	return nil
 }
 
 type reader struct {
