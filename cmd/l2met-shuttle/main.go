@@ -30,7 +30,7 @@ func parseArgs() (string, io.Writer) {
 		out = os.Stdout
 	}
 
-	return flag.Arg(1), out
+	return flag.Arg(0), out
 }
 
 func main() {
