@@ -47,7 +47,7 @@ func main() {
 	s.LoadReader(ioutil.NopCloser(r))
 	s.Launch()
 
-	shuttle.Copy(ch, os.Stdin, output)
+	shuttle.Copy(ch, io.TeeReader(os.Stdin, output))
 
 	close(ch)
 

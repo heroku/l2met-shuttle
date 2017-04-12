@@ -6,20 +6,11 @@ import (
 	"io"
 )
 
-func Copy(ch chan<- []byte, r io.Reader, w io.Writer) error {
+func Copy(ch chan<- []byte, r io.Reader) error {
 	scanner := bufio.NewScanner(r)
 
 	for scanner.Scan() {
-		line := scanner.Bytes()
-		cpy := make([]byte, len(line)+1)
-		copy(cpy, line)
-		line = append(line, '\n')
-
-		if _, err := io.Copy(w, bytes.NewReader(line)); err != nil {
-			return err
-		}
-
-		ch <- line
+		ch <- append(scanner.Bytes(), '\n')
 	}
 
 	return scanner.Err()
