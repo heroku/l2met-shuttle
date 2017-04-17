@@ -17,7 +17,7 @@ func usage() {
 	os.Exit(1)
 }
 
-func parseArgs() (string, io.Writer) {
+func parseArgs(r io.Reader) (string, io.Reader) {
 	tee := flag.Bool("tee", false, "pipe input through to stdout")
 	flag.Parse()
 
@@ -25,16 +25,15 @@ func parseArgs() (string, io.Writer) {
 		usage()
 	}
 
-	var out io.Writer = ioutil.Discard
 	if *tee {
-		out = os.Stdout
+		r = io.TeeReader(r, os.Stdout)
 	}
 
-	return flag.Arg(0), out
+	return flag.Arg(0), r
 }
 
 func main() {
-	url, output := parseArgs()
+	url, in := parseArgs(os.Stdin)
 
 	ch := make(chan []byte)
 
@@ -47,7 +46,7 @@ func main() {
 	s.LoadReader(ioutil.NopCloser(r))
 	s.Launch()
 
-	shuttle.Copy(ch, os.Stdin, output)
+	shuttle.Copy(ch, in)
 
 	close(ch)
 
