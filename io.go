@@ -7,13 +7,19 @@ import (
 )
 
 func Copy(ch chan<- []byte, r io.Reader) error {
-	scanner := bufio.NewScanner(r)
+	reader := bufio.NewReader(r)
 
-	for scanner.Scan() {
-		ch <- append(scanner.Bytes(), '\n')
+	for {
+		bytes, err := reader.ReadBytes('\n')
+		if len(bytes) > 0 {
+			ch <- bytes
+		}
+		if err == io.EOF {
+			return nil
+		} else if err != nil {
+			return err
+		}
 	}
-
-	return scanner.Err()
 }
 
 type reader struct {
