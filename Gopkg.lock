@@ -16,8 +16,8 @@
 [[projects]]
   name = "github.com/heroku/log-shuttle"
   packages = ["."]
-  revision = "25add848160801399787327d73eae169a160b54d"
-  version = "v0.16.0"
+  revision = "f9da6cfea5ce30faf1749d6a5b7d591e230500df"
+  version = "v0.16.5"
 
 [[projects]]
   name = "github.com/pborman/uuid"
