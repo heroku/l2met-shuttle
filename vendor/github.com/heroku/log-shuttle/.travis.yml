@@ -3,33 +3,36 @@ services:
 - docker
 sudo: required
 go:
-- 1.6
+- go1.9.3
 script:
 - make test
 before_deploy:
 - make debs
 - export DEB_VERSION=$(git describe --tags --always | sed s/^v//)
-- docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 - make docker-push
-notifications:
-  hipchat:
-    rooms:
-    - secure: QUMhx7wwa/+gRlSLhXbANh2BoNpPR8TkxwCaRSK8/hAx2UAYExcPzkkobZrhkPCWFT6Cmbtem6j/o2/5DiR8cBb+2QSeBHWBS8Rm+zLfmlWTGOywm8mjQW+kgaUveQSBz7quV+X2Qv0yO7QORH2sWobU1NP3OTu26PfOBaNxYLA=
-    template:
-    - '%{repository}#%{build_number} (%{branch} - %{commit} : %{author}): %{message}
-      (<a href="%{build_url}">Details</a> | <a href="%{compare_url}">Change view</a>)'
-    format: html
 deploy:
-  skip_cleanup: true
-  provider: releases
-  api_key:
-    secure: X0L3J3k9YGaIUESz22nkTf92d74LXSSOx3LiX/rLlUjavYLX06qlzRGr0nDrrBvYOM3QgkRQWgeaQUgCoPsBP2sFOya47jDl6cg7mKgw4GUPj5fwi82JeOxKOvoLhcXqttgJAaX74J61idvldjyzRtQiTftqj0HpGJj8uW4qb4I=
-  file: log-shuttle_${DEB_VERSION}_amd64.deb
-  on:
-    tags: true
-    repo: heroku/log-shuttle
+  - provider: releases
+    skip_cleanup: true
+    api_key:
+      secure: XLs592eds4fC6/dqefrOC8w8lZIK1/Hj+u3EFW3HSdgFI/5lMNG+DaN9GLDKLdm8mYkAf+te6vdiai3e2jg48Tox17nGzia280WRn2mGUWx4HaDvKOPsprQCnMNz7mLeKokaP7YnwFhqd6bjWD6xpS53I6OSjbW9wM+V0sN21Vo=
+    file: log-shuttle_${DEB_VERSION}_amd64.deb
+    on:
+      tags: true
+      repo: heroku/log-shuttle
+  - provider: packagecloud
+    skip_cleanup: true
+    repository: "open"
+    username: "heroku"
+    token:
+      secure: "noS4YOfugFPsUEHezZ2ZS24hVfuTGRcO/j2o1jlR+F2eQc8jLViMf2tWOBBciZOIXmiHyYTpApQ/jA6wY8L/xwsLQWkzr14yv+/pJjfYCHlDNKhdA7/+OHycDaSFBavBGUYQlxY8MwdWjHsuBWcq2LZ8SQpod6y81DX16D9kppY="
+    dist: ubuntu/trusty
+    package_glob: "*.deb"
+    on:
+      tags: true
+      repo: heroku/log-shuttle
 env:
   global:
-  - secure: H9oSeQVjK/5UlcFEm1Qdcx1SppHHHVhcSQ97I6fu0l6kf/frL9Ps2bonP2D7wwHo7S6UnF/VLz6GWs8Tf258Ihy6J7YqnRPPjPC68yxH1kQYrLFUa9btPKsGH8o/QBiCJ9W86Z7PCTXtaHP2iGqtRsqGZijglkgoU+jrht1qTXU=
-  - secure: QDuK5FEM+dDvcUCZ2iUP/c50vSsmRsqiagPsIspRjxwKYvcNtK4avPYzeTIXBEmym2LflBBVFgsSRf20ohAkZJ8uL6yojuVIXDyZS9Uruys9lx8bv62nW/mDYEV2XrRQmbySTEj3uk4ATE3gzycq7UbJqiWDYUcbFG4mlk5FyLc=
-  - secure: jcZ237tALuRf09+u9jmQ381r83qAWEMGJq/a79eIKbwRW7SLe1SBaDyDfZTDkUX/WB8njhU4LHdx9UavsX99nFj2U2kAaw1TLTDDUE/xo+asjptzIG8lqgouVXGsy78JKBEfdLpp/jHqnqpTGPG9G3w0CaammWoKtCn7ERQtZos=
+  - secure: PGlgN8iLUyf0+JgPS774jVms0RxlLvyF9mH0mofca/kGb2tgCrSkbZMFMPhBmcPISNP/RPKugrO6rrAGMvm+C04VC+NCfr32im5Al4Of0inhlwi6Xk015LfDYs6Oo8GHRMa4XSCnfhkIx+/xUO1w9JeE5vtVGEPTGcLnNbRZQ84=
+  - secure: I6Yk2OKzgelw1mkwZyq5kUxt8UOfFM3TEf9Wa4NpInshmbP8fxUZEeD+gMAQOneuICiM0RwfOomikqGeEcYiery2/WDILZ5j4+0MqyKthoBqTDRHhVw/r9Y7hQ3gGiSq1s2CihiEL++Jkatxm9PaxxOxaYiFDvtk8ALCC4rc1AA=
+  - secure: dTATw5SQCuegg8ZDvlOe+P0op4aE++CGKujKBJhCbbsvf6nU5m1ykb5DIM4Gbb+qD76rTaqafU2l75ag8hhBIeGDTgwSmNHgGbJU/HapI65UVaupmH5SY7kMnIsL5jbiAlLPWPaMABQFN588UVxcWF71CekD0zGVd6i5fAGYjA0=
