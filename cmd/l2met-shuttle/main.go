@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/heroku/l2met-shuttle"
+	shuttle "github.com/heroku/l2met-shuttle"
 	lshuttle "github.com/heroku/log-shuttle"
 )
 
