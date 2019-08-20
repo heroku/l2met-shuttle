@@ -41,7 +41,7 @@ func main() {
 
 	go func() {
 		sig := <-sigs
-        fmt.Printf("l2met-shuttle: received %v, ignoring\n", sig)
+		fmt.Printf("l2met-shuttle: received %v, ignoring\n", sig)
 	}()
 
 	url, in := parseArgs(os.Stdin)
