@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/signal"
+	"syscall"
 
 	shuttle "github.com/heroku/l2met-shuttle"
 	lshuttle "github.com/heroku/log-shuttle"
@@ -33,6 +35,15 @@ func parseArgs(r io.Reader) (string, io.Reader) {
 }
 
 func main() {
+	sigs := make(chan os.Signal, 1)
+
+	signal.Notify(sigs, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		fmt.Printf("l2met-shuttle: received %v, ignoring\n", sig)
+	}()
+
 	url, in := parseArgs(os.Stdin)
 
 	ch := make(chan []byte)
