@@ -4,7 +4,7 @@ GO_PACKAGES := $(shell go list ./... | grep -v /vendor/)
 travis: tidy test
 
 test:
-	go test -race -v $(GO_PACKAGES)
+	go test -mod=vendor -race -v $(GO_PACKAGES)
 
 # Setup & Code Cleanliness
 setup: hooks tidy
@@ -14,9 +14,12 @@ hooks:
 
 tidy: goimports
 	test -z "$$(goimports -l -d $(GO_FILES) | tee /dev/stderr)"
-	go vet $(GO_PACKAGES)
+	go vet -mod=vendor ./...
+	go mod vendor
+	go mod tidy
+	go mod verify
 
 precommit: tidy test
 
 goimports:
-	go get golang.org/x/tools/cmd/goimports
+	GO111MODULE=off go get golang.org/x/tools/cmd/goimports
