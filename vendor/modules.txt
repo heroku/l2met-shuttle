@@ -8,7 +8,7 @@ github.com/heroku/log-shuttle
 github.com/pborman/uuid
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/rcrowley/go-metrics v0.0.0-20161128210544-1f30fe9094a5
+# github.com/rcrowley/go-metrics v0.0.0-20190706150252-9beb055b7962
 github.com/rcrowley/go-metrics
 # github.com/stretchr/testify v1.1.4
 github.com/stretchr/testify/assert
