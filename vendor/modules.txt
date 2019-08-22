@@ -2,7 +2,7 @@
 github.com/bmizerany/aws4
 # github.com/davecgh/go-spew v1.1.0
 github.com/davecgh/go-spew/spew
-# github.com/heroku/log-shuttle v0.16.5
+# github.com/heroku/log-shuttle v0.17.1
 github.com/heroku/log-shuttle
 # github.com/pborman/uuid v0.0.0-20160209185913-a97ce2ca70fa
 github.com/pborman/uuid
