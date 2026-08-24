@@ -5,6 +5,11 @@
 [l2met]: https://github.com/ryandotsmith/l2met
 [log-shuttle]: https://github.com/heroku/log-shuttle
 
+## Project Information
+
+See the [contribution guidelines](CONTRIBUTING.md), [Code of Conduct](CODE_OF_CONDUCT.md),
+[security policy](SECURITY.md), and [license](LICENSE.txt).
+
 ## Usage
 
     $ <command> [<argument>...] | l2met-shuttle <url>
