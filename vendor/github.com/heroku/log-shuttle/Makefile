@@ -1,11 +1,18 @@
 GO_LINKER_SYMBOL := main.version
 GO_BUILD_ENV := GOOS=linux GOARCH=amd64
+OUTDIR := .out
 
 all: test
 
 test:
 	go test -v ./...
 	go test -v -race ./...
+
+build: clean ldflags ver
+	CGO_ENABLED=0 go build -v -o ${OUTDIR}/log-shuttle ${LDFLAGS} ./cmd/log-shuttle
+
+clean:
+	rm -rf ${OUTDIR}
 
 install: ldflags
 	go install -v ${LDFLAGS} ./...
@@ -28,7 +35,7 @@ glv:
 	$(eval GO_LINKER_VALUE := $(shell git describe --tags --always))
 
 ldflags: glv
-	$(eval LDFLAGS := -ldflags "-X ${GO_LINKER_SYMBOL}=${GO_LINKER_VALUE}")
+	$(eval LDFLAGS := -ldflags "-X ${GO_LINKER_SYMBOL}=${GO_LINKER_VALUE} -extldflags=-static")
 
 ver: glv
 	$(eval VERSION := $(shell echo ${GO_LINKER_VALUE} | sed s/^v//))
@@ -40,9 +47,6 @@ docker: ldflags ver clean-docker-build
 
 clean-docker-build:
 	rm -rf .docker_build
-
-docker-push: docker ver
-	docker push heroku/log-shuttle:${VERSION}
 
 tmp:
 	$(eval TMP := $(shell mktemp -d -t log_shuttle.XXXXX))
