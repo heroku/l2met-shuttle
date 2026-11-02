@@ -19,10 +19,9 @@ const (
 // log lines.  Wraps log lines in length prefixed rfc5424 formatting, splitting
 // them as necessary to config.MaxLineLength
 type LogplexBatchFormatter struct {
-	headers       http.Header
-	stringURL     string
-	msgCount      int
-	contentLength int64
+	headers   http.Header
+	stringURL string
+	msgCount  int
 	io.Reader
 }
 
@@ -35,6 +34,10 @@ func NewLogplexBatchFormatter(b Batch, eData []errData, config *Config) HTTPForm
 
 	bf.headers.Add("Content-Type", LogplexContentType)
 	bf.headers.Add("X-Request-Id", b.UUID)
+
+	if config.BearerAuthToken != "" {
+		bf.headers.Add("Authorization", fmt.Sprintf("Bearer %s", config.BearerAuthToken))
+	}
 
 	var r SubFormatter
 	readers := make([]io.Reader, 0, b.MsgCount()+len(eData))
@@ -81,6 +84,8 @@ func (bf *LogplexBatchFormatter) Request() (*http.Request, error) {
 		return nil, err
 	}
 
+	authHeadersPresent := bf.headers.Get("Authorization") != ""
+
 	req, err := http.NewRequest("POST", u.String(), bf)
 	if err != nil {
 		return nil, err
@@ -89,8 +94,10 @@ func (bf *LogplexBatchFormatter) Request() (*http.Request, error) {
 	// Assign headers before we potentially BasicAuth
 	req.Header = bf.headers
 
-	if user != "" || pass != "" {
-		req.SetBasicAuth(user, pass)
+	if !authHeadersPresent {
+		if user != "" || pass != "" {
+			req.SetBasicAuth(user, pass)
+		}
 	}
 
 	return req, nil
@@ -101,7 +108,7 @@ func (bf *LogplexBatchFormatter) MsgCount() int {
 	return bf.msgCount
 }
 
-//Splits the line into a batch of loglines of max(mll) lengths
+// Splits the line into a batch of loglines of max(mll) lengths
 func splitLine(ll LogLine, mll int) Batch {
 	l := ll.Length()
 	batch := NewBatch(int(l/mll) + 1)
@@ -127,10 +134,8 @@ type LogplexLineFormatter struct {
 // NewLogplexLineFormatter returns a new LogplexLineFormatter wrapping the provided LogLine
 func NewLogplexLineFormatter(ll LogLine, config *Config) *LogplexLineFormatter {
 	var header string
-
-	if config.InputFormat == InputFormatRFC5424 {
-		header = strconv.Itoa(len(ll.line)) + " "
-	} else {
+	switch config.InputFormat {
+	case InputFormatRaw:
 		//fmt.Sprintf induces an extra allocation
 		header = strconv.Itoa(len(ll.line)+config.lengthPrefixedSyslogFrameHeaderSize) + " " +
 			"<" + config.Prival + ">" + config.Version + " " +
@@ -139,7 +144,13 @@ func NewLogplexLineFormatter(ll LogLine, config *Config) *LogplexLineFormatter {
 			config.Appname + " " +
 			config.Procid + " " +
 			config.Msgid + " "
+	case InputFormatLengthPrefixedRFC5424:
+		//NOOP, the message should already be in the right format. *\o/*
+		//TODO: should we ensure the message is in the right format?
+	case InputFormatRFC5424:
+		header = strconv.Itoa(len(ll.line)) + " "
 	}
+
 	return &LogplexLineFormatter{
 		line:        ll.line,
 		header:      header,
@@ -178,19 +189,18 @@ func (llf *LogplexLineFormatter) Read(p []byte) (n int, err error) {
 	return
 }
 
-func (llf *LogplexLineFormatter) len() int {
-	return len(llf.line) + len(llf.header)
-}
-
-func thirdPartOfLine(l []byte) string {
+// fourth space seperated field in the []byte
+func fourthField(l []byte) string {
 	var start, found int
-	for i := 0; i < len(l); i++ {
-		if l[i] == 32 {
+	for end := 0; end < len(l); end++ {
+		if l[end] == ' ' {
 			found++
-			if found == 3 {
-				start = i
-			} else if found == 4 {
-				return string(l[start+1 : i])
+			switch found {
+			case 3:
+				start = end + 1
+				continue
+			case 4:
+				return string(l[start:end])
 			}
 		}
 	}
@@ -202,9 +212,9 @@ func thirdPartOfLine(l []byte) string {
 func (llf *LogplexLineFormatter) AppName() string {
 	switch llf.inputFormat {
 	case InputFormatRaw:
-		return thirdPartOfLine([]byte(llf.header))
+		return fourthField([]byte(llf.header))
 	case InputFormatRFC5424:
-		return thirdPartOfLine(llf.line)
+		return fourthField(llf.line)
 	}
 	panic("Unknown input format, or can't get appname reliably for input format")
 }

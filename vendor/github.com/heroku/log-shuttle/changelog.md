@@ -1,3 +1,37 @@
+### Unreleased
+
+### 0.22.0 2025-02-17 Dan Starner (dstarner@salesforce.com)
+
+* Disable cgo for the purpose of an omni-linux binary (#117)
+* Build the Ubuntu debs on the Correct Ubuntu Version (#115)
+
+### 0.21.2 2025-02-07 Matt Blewitt (matthew.blewitt@salesforce.com)
+
+* Remove ncipollo/release-action
+
+### 0.21.1 2025-02-07 Matt Blewitt (matthew.blewitt@salesforce.com)
+
+* Update GHA
+* Update dist targets to focal and noble
+
+### 0.21.0 2025-02-03 Matt Blewitt (matthew.blewitt@salesforce.com)
+
+* Add -bearer-token to support Bearer auth
+
+### 0.18.0 2019-02-14 Edward Muller (emuller@salesforce.com)
+
+* Build with 1.11.5
+* Switch to using go modules
+
+### 0.17.0 2018-03-01 Edward Muller (emuller@salesforce.com)
+
+* Build with 1.9.4
+* Remove -input=rfc3164. It looks like it was dead code anyway
+* Add -input=lprfc5424 to handle length prefixed RFC5424 input frames. This is
+  known as "logplex format".
+* Clarify that -input=rfc5424 is newline terminated RFC5424.
+* Some misc code/doc cleanups based on vet output
+
 ### 0.16.1 2018-01-25 Cyril David (cyril@heroku.com)
 
 * Build with 1.9.3
